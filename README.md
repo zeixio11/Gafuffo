@@ -10,7 +10,7 @@ Este proyecto implementa un sistema de gafas con cámara inteligente basado en e
 |---------|-------------|
 | [`reconocimiento.py`](reconocimiento.py) | Motor de reconocimiento de objetos con YOLO |
 | [`servidor.py`](servidor.py) | Servidor web Flask para recibir, analizar y mostrar fotos |
-| [`stckt-claude.cpp`](stckt-claude.cpp) | Firmware para el ESP32-S3-CAM (Arduino/C++) |
+| [`main_ESP32code.cpp`](main_ESP32code.cpp) | Firmware para el ESP32-S3-CAM (Arduino/C++) |
 | [`yolo11n.pt`](yolo11n.pt) | Modelo de detección de objetos pre-entrenado de Ultralytics |
 
 ---
@@ -100,7 +100,7 @@ La galería estará disponible en: [`http://localhost:5000`](http://localhost:50
 
 ---
 
-### `stckt-claude.cpp`
+### `main_ESP32code.cpp`
 
 **Propósito:** Firmware del microcontrolador ESP32-S3-CAM. Captura imágenes cuando se presiona un botón físico y las envía al servidor vía WiFi.
 
@@ -134,19 +134,20 @@ La galería estará disponible en: [`http://localhost:5000`](http://localhost:50
 **Flujo del botón:**
 1. Se detecta la pulsación del botón conectado al **GPIO 13** (con pull-up interno).
 2. Se captura un frame de la cámara (`esp_camera_fb_get`).
-3. Se envía al servidor mediante HTTP POST a la URL configurada.
+3. Se envía al servidor mediante HTTP POST a la URL configurada con el header `X-Api-Key`.
 4. Se libera el buffer de la cámara.
 5. Se espera a que se suelte el botón para evitar capturas múltiples.
 
 **Configuración de red:**
 
 ```cpp
-const char* ssid = "TU_RED";
-const char* pass = "TU_CLAVE";
-const char* url  = "http://192.168.1.50:5000/upload";
+const char* ssid    = "TU_RED";
+const char* pass    = "TU_CLAVE";
+const char* url     = "http://192.168.1.50:5000/upload";
+const char* api_key = "cambia-esta-clave";   // debe coincidir con servidor.py
 ```
 
-> ⚠️ **Importante:** Actualiza `ssid`, `pass` y `url` con los datos de tu red WiFi y la IP del servidor.
+> ⚠️ **Importante:** Actualiza `ssid`, `pass`, `url` y `api_key` con los datos de tu red WiFi, la IP del servidor y la misma clave API configurada en `servidor.py`.
 
 ---
 
@@ -217,16 +218,18 @@ El servidor estará escuchando en `http://0.0.0.0:5000`.
 
 ### 2. Firmware ESP32
 
-1. Abre `stckt-claude.cpp` en el [Arduino IDE](https://www.arduino.cc/en/software) o [PlatformIO](https://platformio.org/).
+1. Abre `main_ESP32code.cpp` en el [Arduino IDE](https://www.arduino.cc/en/software) o [PlatformIO](https://platformio.org/).
 2. Instala las librerías:
    - `esp_camera` (incluida en el core ESP32)
    - `WiFi` (incluida en el core ESP32)
    - `HTTPClient` (incluida en el core ESP32)
-3. Configura las credenciales WiFi y la IP del servidor:
+3. Configura las credenciales WiFi, la IP del servidor y la clave API:
    ```cpp
    const char* ssid = "TU_RED";
    const char* pass = "TU_CLAVE";
    const char* url  = "http://192.168.1.X:5000/upload";
+   // La clave API debe coincidir con API_KEY en servidor.py:
+   // http.addHeader("X-Api-Key", "cambia-esta-clave");
    ```
 4. Compila y sube el firmware al ESP32-S3-CAM.
 
@@ -245,7 +248,7 @@ El servidor estará escuchando en `http://0.0.0.0:5000`.
 proyecto/
 ├── reconocimiento.py      # Motor de IA
 ├── servidor.py            # Servidor web
-├── stckt-claude.cpp       # Firmware ESP32
+├── main_ESP32code.cpp     # Firmware ESP32
 ├── yolo11n.pt             # Modelo YOLO
 └── fotos/                 # Creado automáticamente
     ├── foto_YYYYMMDD_HHMMSS_XXX.jpg
@@ -258,7 +261,7 @@ proyecto/
 
 ## 🔒 Seguridad
 
-- El endpoint `/upload` requiere el header `X-Api-Key`. Cambia la clave por defecto tanto en `servidor.py` como en `stckt-claude.cpp` antes de usar en producción.
+- El endpoint `/upload` requiere el header `X-Api-Key`. Cambia la clave por defecto tanto en `servidor.py` como en `main_ESP32code.cpp` antes de usar en producción.
 - El servidor Flask en modo desarrollo no está optimizado para entornos de producción. Usa un servidor WSGI (como Gunicorn) si necesitas exponerlo a la red.
 
 ---
