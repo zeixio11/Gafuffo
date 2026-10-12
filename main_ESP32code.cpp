@@ -8,7 +8,7 @@
 //   Delete these three lines once ConnectionManager.begin() is called in setup().
 const char* ssid = "TU_RED";
 const char* pass = "TU_CLAVE";
-const char* url  = "http://192.168.1.50:5000/upload"; // IP del PC
+const char* url  = "LA DIRECCION IP"; // IP del PC
 #define BOTON 13
 
 void setup() {
