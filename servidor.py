@@ -27,7 +27,7 @@ from html import escape
 from flask import Flask, request, jsonify, send_from_directory, abort
 # from zeroconf import Zeroconf, ServiceInfo
 
-API_KEY = "cambia-esta-clave"      # Debe coincidir con API_KEY en main_ESP32code.cpp
+API_KEY = "API KEY"      # Debe coincidir con API_KEY en main_ESP32code.cpp
 PUERTO = 5000
 RECONOCIMIENTO = True              # False = solo guarda las fotos, sin analizar
 
