@@ -8,7 +8,7 @@ de personas y objetos.
 - Galería web: abre http://localhost:5000 en el navegador
 - Resultado de la última foto en JSON: http://localhost:5000/api/ultima
 
-Instalación:   pip install flask ultralytics
+Instalación:   pip install flask ultralytics pillow
 Ejecución:     python servidor.py
 """
 
@@ -27,7 +27,7 @@ from html import escape
 from flask import Flask, request, jsonify, send_from_directory, abort
 # from zeroconf import Zeroconf, ServiceInfo
 
-API_KEY = "cambia-esta-clave"      # Debe coincidir con API_KEY en el .ino
+API_KEY = "cambia-esta-clave"      # Debe coincidir con API_KEY en main_ESP32code.cpp
 PUERTO = 5000
 RECONOCIMIENTO = True              # False = solo guarda las fotos, sin analizar
 
@@ -71,7 +71,7 @@ def trabajador():
 
 def iniciar_reconocimiento():
     global reconocedor
-    from proyecto.reconocimiento import Reconocedor
+    from reconocimiento import Reconocedor
     reconocedor = Reconocedor()
     threading.Thread(target=trabajador, daemon=True).start()
     # Analiza fotos que llegaron antes y aún no tienen resultado

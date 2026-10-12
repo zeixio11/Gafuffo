@@ -8,7 +8,7 @@
 //   Delete these three lines once ConnectionManager.begin() is called in setup().
 const char* ssid = "TU_RED";
 const char* pass = "TU_CLAVE";
-const char* url  = "http://192.168.1.50:5000/foto"; // IP del PC
+const char* url  = "http://192.168.1.50:5000/upload"; // IP del PC
 #define BOTON 13
 
 void setup() {
@@ -40,6 +40,7 @@ void loop() {
       HTTPClient http;
       http.begin(url);
       http.addHeader("Content-Type", "image/jpeg");
+      http.addHeader("X-Api-Key", "cambia-esta-clave");   // debe coincidir con servidor.py
       http.POST(fb->buf, fb->len);
       http.end();
       esp_camera_fb_return(fb);
